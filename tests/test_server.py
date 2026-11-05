@@ -88,9 +88,11 @@ class ApplicationTest(unittest.TestCase):
         self.assertEqual(self.request('/api/sessions', [1, 2])[0], 400)
 
     def test_static_health_headers_and_private_files(self):
-        for path in ('/', '/styles.css', '/app.js', '/favicon.svg', '/api/health'):
+        for path in ('/', '/styles.css', '/app.js', '/value-selection.mjs', '/value-exercise.mjs', '/favicon.svg', '/api/health'):
             status, _, headers = self.request(path)
             self.assertEqual(status, 200)
+            if path.endswith(('.js', '.mjs')):
+                self.assertEqual(headers['Content-Type'], 'text/javascript; charset=utf-8')
             self.assertEqual(headers['X-Content-Type-Options'], 'nosniff')
             self.assertIn("frame-ancestors 'none'", headers['Content-Security-Policy'])
         for path in ('/server.py', '/../server.py', '/data/pilinova.sqlite3', '/missing'):

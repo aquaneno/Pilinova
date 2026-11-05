@@ -1,4 +1,7 @@
+import {mountValueExercise} from './value-exercise.mjs';
+
 const $ = (selector) => document.querySelector(selector);
+const sessionExercises = new Map();
 const message = (element, text, error = false) => {
   element.textContent = text;
   element.classList.toggle('error', error);
@@ -28,10 +31,17 @@ async function api(path, body) {
 function showSession(id, joined = false) {
   $('#created-session').value = id;
   $('#session-title').textContent = joined ? 'Ihr seid verbunden.' : 'Ein Raum für euch zwei.';
-  $('#session-description').textContent = joined ? 'Diese Session wurde gefunden. Hier könnt ihr später eure Perspektiven und Werte vergleichen.' : 'Teile diese Session-ID mit dem Menschen, mit dem du deine Werte entdecken möchtest. Sie ist 30 Tage gültig.';
+  $('#session-description').textContent = joined ? 'Ihr könnt jetzt jeweils eure wichtigsten Werte entdecken. Wähle bei jedem Wertepaar, was dir wichtiger ist.' : 'Teile diese Session-ID mit dem Menschen, mit dem du deine Werte entdecken möchtest. Sie ist 30 Tage gültig. Du kannst deine Werte-Auswahl direkt starten.';
   message($('#copy-message'), '');
   $('#session-dialog').showModal();
-  $('#session-dialog').querySelectorAll('[data-method]').forEach(loadMethodContent);
+  const container = $('#session-dialog [data-method="together"]');
+  if (!sessionExercises.has(id)) {
+    const exercise = document.createElement('div');
+    exercise.dataset.method = 'together';
+    sessionExercises.set(id, exercise);
+    loadMethodContent(exercise);
+  }
+  container.replaceChildren(sessionExercises.get(id));
 }
 
 async function loadMethodContent(container) {
@@ -42,6 +52,10 @@ async function loadMethodContent(container) {
     if (!response.ok) throw new Error();
     const result = await response.json();
     container.replaceChildren();
+    if (container.dataset.method === 'together') {
+      mountValueExercise(container, result.lists);
+      return;
+    }
     if (!result.lists.length) { status.textContent = 'Hier werden bald Fragen und Werte für diese Methode bereitstehen.'; container.append(status); return; }
     for (const list of result.lists) {
       const details = document.createElement('details'); details.className = 'method-list';

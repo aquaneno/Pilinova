@@ -18,6 +18,8 @@ SESSION_TTL = 30 * 24 * 60 * 60
 STATIC = {'/': ('index.html', 'text/html; charset=utf-8'),
           '/styles.css': ('styles.css', 'text/css; charset=utf-8'),
           '/app.js': ('app.js', 'text/javascript; charset=utf-8'),
+          '/value-selection.mjs': ('value-selection.mjs', 'text/javascript; charset=utf-8'),
+          '/value-exercise.mjs': ('value-exercise.mjs', 'text/javascript; charset=utf-8'),
           '/favicon.svg': ('favicon.svg', 'image/svg+xml')}
 STATIC.update({'/admin': ('admin.html', 'text/html; charset=utf-8'),
                '/admin/': ('admin.html', 'text/html; charset=utf-8'),
