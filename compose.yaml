@@ -3,6 +3,10 @@ services:
     build: .
     image: pilinova:local
     restart: unless-stopped
+    environment:
+      ADMIN_USERNAME: "${ADMIN_USERNAME:-admin}"
+      ADMIN_PASSWORD_HASH: "${ADMIN_PASSWORD_HASH:-}"
+      ADMIN_COOKIE_SECURE: "${ADMIN_COOKIE_SECURE:-true}"
     ports:
       - target: 8080
         published: "${PORT:-8080}"

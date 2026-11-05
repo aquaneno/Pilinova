@@ -50,12 +50,13 @@
     </section>
     <p class="closing"><span aria-hidden="true">✳</span> Es gibt kein Richtig oder Falsch. Nur das, was dir wichtig ist.</p>
   </main>
-  <footer><span>pilinova · Was uns verbindet</span><span>Mit Neugier. Mit Offenheit. Miteinander.</span></footer>
+  <footer><span>pilinova · Was uns verbindet</span><span>Mit Neugier. Mit Offenheit. Miteinander. · <a href="/admin">Verwaltung</a></span></footer>
 
   <dialog id="self-dialog" aria-labelledby="self-title">
     <button class="close" type="button" aria-label="Schließen">×</button>
-    <p class="eyebrow">VERBINDUNG ZU MIR</p><h2 id="self-title">Deine Reise beginnt bald.</h2>
-    <p>Hier entsteht ein Raum, in dem du deine eigenen Werte entdecken kannst. Die Übung folgt in einem nächsten Schritt.</p>
+    <p class="eyebrow">VERBINDUNG ZU MIR</p><h2 id="self-title">Ein Moment für dich.</h2>
+    <p>Lass dich von den Fragen und Werten inspirieren. Was ist dir heute besonders wichtig?</p>
+    <div class="method-content" data-method="self" aria-live="polite"></div>
     <button class="button button-green" type="button" data-close>Zurück zur Übersicht <span aria-hidden="true">↗</span></button>
   </dialog>
   <dialog id="session-dialog" aria-labelledby="session-title">
@@ -66,12 +67,14 @@
     <input class="created-id" id="created-session" readonly>
     <button class="button button-green" id="copy-session" type="button">Session-ID kopieren <span aria-hidden="true">↗</span></button>
     <p id="copy-message" class="inline-message" role="status"></p>
+    <div class="method-content" data-method="together" aria-live="polite"></div>
     <p class="hint">Die gemeinsame Werte-Übung folgt. Eure Session ist bereits angelegt.</p>
   </dialog>
   <dialog id="email-dialog" aria-labelledby="email-title">
     <button class="close" type="button" aria-label="Schließen">×</button>
     <p class="eyebrow">E-MAIL FÜR UNS</p><h2 id="email-title">Zeit füreinander.</h2>
     <p>Zwei E-Mail-Adressen und ein Rhythmus, der zu euch passt.</p>
+    <div class="method-content" data-method="email" aria-live="polite"></div>
     <form id="email-form" novalidate>
       <label class="field-label" for="email-one">Deine E-Mail-Adresse</label><input id="email-one" type="email" name="emailOne" placeholder="du@beispiel.de" autocomplete="email" maxlength="254" required>
       <label class="field-label" for="email-two">Die zweite E-Mail-Adresse</label><input id="email-two" type="email" name="emailTwo" placeholder="ihr@beispiel.de" autocomplete="off" maxlength="254" required>

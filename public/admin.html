@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#f7f6f0">
+  <title>Verwaltung · Pilinova</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/admin.css">
+  <script src="/admin.js" defer></script>
+</head>
+<body>
+  <header class="admin-header"><a class="brand" href="/">pilinova<span class="brand-dot">.</span></a><a class="back-link" href="/">Zur Webseite ↗</a></header>
+  <main class="admin-main">
+    <section id="login-panel" class="login-panel" aria-labelledby="login-title">
+      <p class="eyebrow">PILINOVA VERWALTUNG</p><h1 id="login-title">Ein guter Raum.<br><em>Gut betreut.</em></h1>
+      <p class="muted">Verwalte Verbindungen und gestalte die Impulse, die Menschen zusammenbringen.</p>
+      <form id="login-form">
+        <label class="field-label" for="username">Benutzername</label><input id="username" name="username" autocomplete="username" required maxlength="100" value="admin">
+        <label class="field-label" for="password">Passwort</label><input id="password" name="password" type="password" autocomplete="current-password" required maxlength="1024">
+        <p id="login-message" class="inline-message" role="status"></p>
+        <button class="button button-green" type="submit">Anmelden <span aria-hidden="true">→</span></button>
+      </form>
+      <p class="hint">Geschützter Zugang für die Administration.</p>
+    </section>
+    <div id="workspace" class="workspace" hidden>
+      <aside class="sidebar"><p class="eyebrow">VERWALTUNG</p>
+        <nav aria-label="Verwaltungsbereiche">
+          <button data-view="sessions" aria-current="page"><span>01</span> Sessions</button>
+          <button data-view="emails"><span>02</span> E-Mail-Adressen</button>
+          <button data-view="lists"><span>03</span> Fragen & Werte</button>
+        </nav>
+        <div class="account"><span id="account-name"></span><button id="logout" type="button">Abmelden ↗</button></div>
+      </aside>
+      <section class="management" aria-labelledby="view-title">
+        <p class="eyebrow" id="view-eyebrow">VERBINDUNGEN BEGLEITEN</p>
+        <div class="view-heading"><h1 id="view-title" tabindex="-1">Sessions</h1><button id="create-entry" class="button button-green" type="button">+ Neue Session</button></div>
+        <p id="view-description" class="muted">Session-IDs finden, ihre Gültigkeit anpassen und den Zugang verwalten.</p>
+        <div id="email-notice" class="notice" hidden>Die Adressen sind für die geplante E-Mail-Funktion gespeichert. Aktuell werden keine E-Mails versendet.</div>
+        <div id="list-notice" class="notice" hidden>Ein Eintrag pro Zeile. Veröffentlichte Listen erscheinen in den zugeordneten Methoden. Entwürfe sind nur hier sichtbar.</div>
+        <form id="search-form" class="search-bar" role="search"><label class="sr-only" for="search">Einträge durchsuchen</label><input id="search" type="search" placeholder="Session-ID suchen …" maxlength="254"><button type="submit">Suchen →</button></form>
+        <p id="workspace-message" class="inline-message" role="status"></p>
+        <div class="result-heading"><span id="result-count" role="status"></span><button id="refresh" type="button">Aktualisieren ↻</button></div>
+        <div id="entries" class="entries" aria-busy="false"></div>
+        <nav class="pagination" aria-label="Ergebnisseiten"><button id="previous" type="button">← Zurück</button><span id="page-number"></span><button id="next" type="button">Weiter →</button></nav>
+      </section>
+    </div>
+  </main>
+  <footer class="admin-footer"><span>pilinova · Raum für Verbindung</span><span>Mit Sorgfalt gestaltet.</span></footer>
+
+  <dialog id="edit-dialog" aria-labelledby="edit-title">
+    <button type="button" class="close" aria-label="Schließen" data-close>×</button>
+    <p class="eyebrow">VERWALTUNG</p><h2 id="edit-title">Eintrag bearbeiten</h2>
+    <form id="edit-form"><div id="edit-fields"></div><p id="edit-message" class="inline-message" role="status"></p><button class="button button-green" type="submit">Speichern <span aria-hidden="true">→</span></button></form>
+  </dialog>
+  <dialog id="delete-dialog" aria-labelledby="delete-title">
+    <button type="button" class="close" aria-label="Schließen" data-close>×</button>
+    <p class="eyebrow">EINTRAG ENTFERNEN</p><h2 id="delete-title">Wirklich löschen?</h2><p id="delete-description"></p>
+    <p id="delete-message" class="inline-message" role="status"></p>
+    <div class="dialog-actions"><button type="button" class="secondary" data-close>Abbrechen</button><button type="button" id="confirm-delete" class="danger">Endgültig löschen</button></div>
+  </dialog>
+</body>
+</html>

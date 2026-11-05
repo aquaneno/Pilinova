@@ -4,7 +4,11 @@ const message = (element, text, error = false) => {
   element.classList.toggle('error', error);
 };
 document.querySelectorAll('[data-open]').forEach(button => {
-  button.addEventListener('click', () => $(`#${button.dataset.open}`).showModal());
+  button.addEventListener('click', () => {
+    const dialog = $(`#${button.dataset.open}`);
+    dialog.showModal();
+    dialog.querySelectorAll('[data-method]').forEach(loadMethodContent);
+  });
 });
 document.querySelectorAll('dialog').forEach(dialog => {
   dialog.querySelectorAll('.close, [data-close]').forEach(button => button.addEventListener('click', () => dialog.close()));
@@ -27,6 +31,29 @@ function showSession(id, joined = false) {
   $('#session-description').textContent = joined ? 'Diese Session wurde gefunden. Hier könnt ihr später eure Perspektiven und Werte vergleichen.' : 'Teile diese Session-ID mit dem Menschen, mit dem du deine Werte entdecken möchtest. Sie ist 30 Tage gültig.';
   message($('#copy-message'), '');
   $('#session-dialog').showModal();
+  $('#session-dialog').querySelectorAll('[data-method]').forEach(loadMethodContent);
+}
+
+async function loadMethodContent(container) {
+  container.replaceChildren();
+  const status = document.createElement('p'); status.className = 'hint'; status.textContent = 'Impulse werden geladen …'; container.append(status);
+  try {
+    const response = await fetch('/api/methods/' + container.dataset.method + '/content');
+    if (!response.ok) throw new Error();
+    const result = await response.json();
+    container.replaceChildren();
+    if (!result.lists.length) { status.textContent = 'Hier werden bald Fragen und Werte für diese Methode bereitstehen.'; container.append(status); return; }
+    for (const list of result.lists) {
+      const details = document.createElement('details'); details.className = 'method-list';
+      const summary = document.createElement('summary'); summary.textContent = list.name + ' · ' + (list.kind === 'questions' ? 'Fragen' : 'Werte'); details.append(summary);
+      const items = document.createElement('ol');
+      for (const item of list.items) { const li = document.createElement('li'); li.textContent = item; items.append(li); }
+      details.append(items); container.append(details);
+    }
+  } catch {
+    status.textContent = 'Die Impulse konnten nicht geladen werden.';
+    const retry = document.createElement('button'); retry.type = 'button'; retry.className = 'text-button'; retry.textContent = 'Erneut laden'; retry.addEventListener('click', () => loadMethodContent(container)); container.replaceChildren(status, retry);
+  }
 }
 $('#create-session').addEventListener('click', async (event) => {
   const button = event.currentTarget;

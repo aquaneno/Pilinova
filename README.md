@@ -6,8 +6,8 @@ Ein ruhiger, öffentlicher Einstieg, um eigene Werte und die eines anderen Mensc
 
 ## Aktueller Umfang
 
-- **Verbindung zu mir:** Startknopf mit einem Hinweis auf die später folgende Werte-Übung.
-- **Verbindung zu dir:** Zufällige Session-ID erstellen, kopieren und auf einem anderen Gerät eingeben. Sessions bleiben über Container-Neustarts erhalten und laufen nach 30 Tagen ab. Die gemeinsame Werte-Übung und der Ergebnisvergleich sind noch nicht implementiert. Der Beitritt prüft aktuell die Existenz der Session; er bindet noch keine Teilnehmeridentität.
+- **Verbindung zu mir:** Fragen und Werte aus den im Admin-Bereich veröffentlichten, zugeordneten Listen ansehen. Die vollständige Werte-Übung folgt später.
+- **Verbindung zu dir:** Zufällige Session-ID erstellen, kopieren und auf einem anderen Gerät eingeben; zugeordnete Fragen und Werte ansehen. Sessions bleiben über Container-Neustarts erhalten und laufen standardmäßig nach 30 Tagen ab. Die gemeinsame Werte-Übung und der Ergebnisvergleich sind noch nicht implementiert. Der Beitritt prüft aktuell die Existenz der Session; er bindet noch keine Teilnehmeridentität.
 - **E-Mail für uns:** Zwei unterschiedliche E-Mail-Adressen und täglich, wöchentlich oder monatlich als Intervall speichern. **Es werden noch keine E-Mails versendet.** SMTP, Inhalte, beidseitige E-Mail-Bestätigung, Abmeldung und Versandplanung sind bewusst Teil einer späteren Erweiterung. Die Oberfläche weist vor dem Speichern darauf hin.
 
 ## Mit Docker starten
@@ -71,7 +71,7 @@ docker compose ps
 docker compose logs --tail=50
 ```
 
-SQLite liegt im persistenten Volume `pilinova-data`, nicht im Container-Image. `docker compose down` erhält es; **`docker compose down -v` löscht die gespeicherten Daten**. Für ein konsistentes Backup den Dienst stoppen und das Volume sichern oder die SQLite-Backup-API verwenden. Enthalten sind Session-IDs und E-Mail-Präferenzen. Es gibt keinen öffentlichen Lese-Endpunkt für E-Mail-Adressen. Die Präferenzen bleiben bis zur administrativen Löschung erhalten; für den echten Versand müssen Bestätigung und Abmeldung ergänzt werden. Die Datenbank ist zugleich der Erweiterungspunkt für diese Funktionen.
+SQLite liegt im persistenten Volume `pilinova-data`, nicht im Container-Image. `docker compose down` erhält es; **`docker compose down -v` löscht die gespeicherten Daten**. Für ein konsistentes Backup den Dienst stoppen und das Volume sichern oder die SQLite-Backup-API verwenden. Enthalten sind Session-IDs, E-Mail-Präferenzen, Admin-Sitzungen und Fragen-/Wertelisten. E-Mail-Adressen können ausschließlich über die geschützte Admin-API gelesen werden. Die Präferenzen bleiben bis zur administrativen Löschung erhalten; für den echten Versand müssen Bestätigung und Abmeldung ergänzt werden. Die Datenbank ist zugleich der Erweiterungspunkt für diese Funktionen.
 
 Der Container läuft als Benutzer 10001 ohne zusätzliche Linux-Capabilities und mit schreibgeschütztem Root-Dateisystem. Bei einem eigenen Bind-Mount für `/app/data` muss das Verzeichnis für UID/GID 10001 schreibbar sein. Das Named Volume in der Compose-Datei wird automatisch passend initialisiert. Der Healthcheck prüft `/api/health`. Docker begrenzt den Dienst auf 256 MB RAM und 128 Prozesse/Threads.
 
@@ -96,4 +96,78 @@ node --check public/app.js
 - `POST /api/email-preferences` mit `{"emailOne":"a@example.org","emailTwo":"b@example.org","interval":"weekly"}`: Präferenz speichern/aktualisieren. Intervall: `daily`, `weekly`, `monthly`. Die Reihenfolge der beiden Adressen ist unerheblich.
 - `GET /api/health`: Betriebsprüfung ohne Nutzerdaten.
 
-POST-Anfragen benötigen `application/json`, sind auf 4 KiB und 30 Anfragen pro Minute je direkter Client-IP begrenzt. Hinter einem Reverse-Proxy teilen sich Clients gegebenenfalls dessen Limit; vor breiter öffentlicher Nutzung ist das Limit am Proxy passend zu konfigurieren und die App-Begrenzung entsprechend weiterzuentwickeln. Weitergeleitete IP-Header werden nicht ungeprüft vertraut. Session-IDs gehören nur den beteiligten Personen und sollten nicht öffentlich geteilt werden. Ein Prozess/Container mit persistentem Volume ist vorgesehen; horizontale Skalierung erfordert eine gemeinsame Datenbank und ein gemeinsames Rate-Limit.
+Öffentliche POST-Anfragen benötigen `application/json`, sind auf 4 KiB und 30 Anfragen pro Minute je direkter Client-IP begrenzt. Hinter einem Reverse-Proxy teilen sich Clients gegebenenfalls dessen Limit; vor breiter öffentlicher Nutzung ist das Limit am Proxy passend zu konfigurieren und die App-Begrenzung entsprechend weiterzuentwickeln. Weitergeleitete IP-Header werden nicht ungeprüft vertraut. Session-IDs gehören nur den beteiligten Personen und sollten nicht öffentlich geteilt werden. Ein Prozess/Container mit persistentem Volume ist vorgesehen; horizontale Skalierung erfordert eine gemeinsame Datenbank und ein gemeinsames Rate-Limit.
+
+## Admin-Interface
+
+Die Verwaltung liegt unter **`/admin`** (auch über den Link im Footer erreichbar). Für die eigene Installation beispielsweise `https://demo.pilinova.de/admin` öffnen. Der öffentliche Teil benötigt weiterhin keine Anmeldung.
+
+### Zugang einrichten
+
+Ohne `ADMIN_PASSWORD_HASH` bleiben sämtliche Admin-Daten und -Aktionen gesperrt. Es gibt kein Standardpasswort. Für den HTTPS-Betrieb mit Cloudflare Tunnel und Nginx Proxy Manager:
+
+1. Aktuellen Code holen und das Image bauen:
+
+   ```bash
+   git pull --ff-only
+   docker compose build
+   ```
+
+2. Ein eigenes Passwort mit mindestens 12 Zeichen wählen und den Hash erzeugen. Das Passwort wird zweimal verdeckt abgefragt und weder gespeichert noch als Argument übergeben:
+
+   ```bash
+   docker compose run --rm --no-deps pilinova python server.py --hash-admin-password
+   ```
+
+   Ohne Docker funktioniert `python3 server.py --hash-admin-password`.
+
+3. Die folgenden Einstellungen in die bestehende `.env` ergänzen. Den vollständig ausgegebenen Hash **in einfache Anführungszeichen** setzen, damit Docker Compose die `$`-Zeichen nicht als Variablen interpretiert:
+
+   ```dotenv
+   ADMIN_USERNAME=admin
+   ADMIN_PASSWORD_HASH='pbkdf2_sha256$600000$…$…'
+   ADMIN_COOKIE_SECURE=true
+   ```
+
+   Der dargestellte Hash ist ein Platzhalter und muss vollständig ersetzt werden. Die bisherige Einstellung für `BIND_ADDRESS` und `PORT` beibehalten.
+
+4. Container neu erstellen und unter `/admin` mit dem selbst gewählten Passwort anmelden:
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+`ADMIN_COOKIE_SECURE=true` ist für die öffentliche HTTPS-Adresse vorgesehen und bleibt auch dann aktiviert, wenn Nginx intern per HTTP mit dem Container spricht. Für eine ausschließlich lokale Entwicklung per HTTP ausdrücklich `ADMIN_COOKIE_SECURE=false` in der Prozessumgebung setzen. Docker Compose liest die `.env`; beim direkten Aufruf von Python müssen die Variablen in der Shell gesetzt sein.
+
+### Funktionen
+
+- **Sessions:** Durchsuchen, neu erstellen, Ablaufdatum bearbeiten, sperren/entsperren und nach Bestätigung endgültig löschen. Gesperrte oder abgelaufene IDs werden am öffentlichen Beitritt abgewiesen. Abgelaufene Sessions bleiben bis zur administrativen Löschung sichtbar. Zum Reaktivieren müssen die Sperre aufgehoben und ein zukünftiges Ablaufdatum eingestellt werden; maximal ein Jahr ab dem Bearbeitungszeitpunkt.
+- **E-Mail-Adressen:** Gespeicherte Paare durchsuchen, hinzufügen, beide Adressen und den Rhythmus bearbeiten oder nach Bestätigung endgültig löschen. Adresspaare werden unabhängig von Reihenfolge und Groß-/Kleinschreibung dedupliziert. Beim Bearbeiten auf ein schon vorhandenes Paar erscheint ein Konflikthinweis; kein anderer Eintrag wird überschrieben. **Der Versand ist weiterhin nicht implementiert.**
+- **Fragen & Werte:** Benannte Listen mit Typ „Fragen“ oder „Werte“ anlegen, bearbeiten und löschen. Ein Eintrag pro Zeile, bis zu 200 Einträge mit je 500 Zeichen; die Reihenfolge bleibt erhalten. Listen können mehreren Methoden zugeordnet werden: „Verbindung zu mir“, „Verbindung zu dir“ und „E-Mail für uns“. Nur veröffentlichte Listen werden dort angezeigt; unveröffentlichte Listen sind Entwürfe. Änderungen gelten beim nächsten Öffnen einer Methode. Beim Löschen einer Liste entfallen ihre Zuordnungen automatisch.
+- Alle Bereiche bieten Suche und Seiten mit jeweils 50 Einträgen. Löschungen sind endgültig; ein Datenbankbackup ermöglicht eine Wiederherstellung.
+
+Die Methoden zeigen Fragen und Werte als aufklappbare Impulslisten. Die vollständige Werte-Übung mit Antworten, Teilnehmerzuordnung und Ergebnisvergleich sowie der E-Mail-Versand bleiben spätere Erweiterungen.
+
+### Speicherung und Zugriffsschutz
+
+Die bestehenden SQLite-Daten werden beim ersten Start automatisch und ohne Verlust von Sessions und E-Mail-Paaren erweitert. Ein konsistentes Backup vor dem Update ist sinnvoll (siehe Betriebsabschnitt). Auch Listen und ihre Methodenzuordnungen liegen im bestehenden Datenvolume.
+
+Der Admin-Login verwendet PBKDF2-SHA256 mit 600.000 Iterationen und zufälligem Salt. Admin-Sitzungen sind acht Stunden gültig und bleiben über Neustarts erhalten. Das Browser-Cookie ist `HttpOnly`, `SameSite=Strict` und standardmäßig `Secure`. In der Datenbank liegt nur der Hash des zufälligen Sitzungstokens. Schreibzugriffe benötigen zusätzlich einen CSRF-Token und durchlaufen die Origin-Prüfung. Loginversuche sind separat auf zehn pro Minute je direkter Client-IP begrenzt; hinter dem Proxy teilen Clients dessen IP-Limit. Der Proxy muss wie bisher den ursprünglichen `Host` weitergeben.
+
+Ein Wechsel von `ADMIN_USERNAME` oder `ADMIN_PASSWORD_HASH` samt Neuerstellen des Containers macht bestehende Admin-Sitzungen ungültig. Nach Abmeldung wird die jeweilige Sitzung serverseitig gelöscht. Zum Deaktivieren der Verwaltung `ADMIN_PASSWORD_HASH` leeren und den Container neu erstellen. Die Admin-Oberfläche enthält keine Zugangsdaten; persönliche Daten werden ausschließlich nach erfolgreicher Anmeldung über die Admin-API ausgeliefert.
+
+Zusätzliche API-Endpunkte:
+
+- `POST /api/admin/login`, `GET /api/admin/me`, `POST /api/admin/logout`.
+- `GET/POST /api/admin/sessions`, `/api/admin/emails`, `/api/admin/lists`.
+- `PUT/DELETE /api/admin/{sessions|emails|lists}/{id}`. Für Änderungen das Sitzungscookie und den bei Login/`me` gelieferten `X-CSRF-Token` senden. IDs für E-Mail-Paare und Listen sind stabile Ganzzahlen.
+- Listen-Endpunkte unterstützen `?q=Suchtext&offset=0`, Seitengröße 50. Anfragen mit JSON-Inhalten sind im Admin-Bereich auf 512 KiB begrenzt, beim Login auf 4 KiB.
+- `GET /api/methods/{self|together|email}/content` liefert ausschließlich veröffentlichte, zugewiesene Listen mit Namen, Typ und geordneten Einträgen. Keine Sessions oder E-Mail-Adressen.
+
+Zusätzliche Prüfung:
+
+```bash
+python3 -m unittest discover -s tests -v
+node --check public/app.js
+node --check public/admin.js
+```

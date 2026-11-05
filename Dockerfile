@@ -7,7 +7,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 RUN groupadd --gid 10001 pilinova && useradd --uid 10001 --gid pilinova --no-create-home pilinova \
     && mkdir /app/data && chown pilinova:pilinova /app/data
-COPY --chown=pilinova:pilinova server.py ./
+COPY --chown=pilinova:pilinova server.py admin.py ./
 COPY --chown=pilinova:pilinova public ./public
 USER pilinova
 EXPOSE 8080
