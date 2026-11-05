@@ -45,6 +45,8 @@ function showSession(id, joined = false) {
 }
 
 async function loadMethodContent(container) {
+  // Preserve a running or finished personal exercise when its dialog is reopened.
+  if (container.dataset.method === 'self' && container.querySelector('.value-exercise')) return;
   container.replaceChildren();
   const status = document.createElement('p'); status.className = 'hint'; status.textContent = 'Impulse werden geladen …'; container.append(status);
   try {
@@ -52,7 +54,7 @@ async function loadMethodContent(container) {
     if (!response.ok) throw new Error();
     const result = await response.json();
     container.replaceChildren();
-    if (container.dataset.method === 'together') {
+    if (container.dataset.method === 'self' || container.dataset.method === 'together') {
       mountValueExercise(container, result.lists);
       return;
     }
