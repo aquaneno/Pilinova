@@ -20,11 +20,45 @@ docker compose up -d --build
 
 Danach: <http://localhost:8080>. Bei einem privaten Repository muss Git am ausführenden Rechner authentifiziert sein.
 
-Standardmäßig ist Port 8080 nur am Docker-Host erreichbar. Für direkten Zugriff aus dem LAN:
+### An eine bestimmte Host-IP binden
+
+Die veröffentlichte IP und der Host-Port sind über `BIND_ADDRESS` und `PORT` konfigurierbar. Ohne Konfiguration bindet Docker ausschließlich an `127.0.0.1:8080`.
+
+Für eine dauerhafte Einstellung die Vorlage einmalig kopieren:
 
 ```bash
-BIND_ADDRESS=0.0.0.0 PORT=8080 docker compose up -d --build
+cp .env.example .env
 ```
+
+Anschließend in der lokalen `.env` die **bereits auf dem Docker-Host vorhandene IP-Adresse** eintragen, zum Beispiel:
+
+```dotenv
+BIND_ADDRESS=192.168.1.50
+PORT=8080
+```
+
+Die Beispiel-IP durch die gewünschte eigene Host-IP ersetzen. Danach den Container erstellen beziehungsweise mit der geänderten Portbindung neu erstellen:
+
+```bash
+docker compose up -d --build
+```
+
+Pilinova ist dann unter `http://192.168.1.50:8080` erreichbar. Docker Compose liest die `.env` automatisch ein; sie wird nicht ins Repository eingecheckt. Zum Prüfen der aufgelösten Konfiguration und der tatsächlichen Portbindung:
+
+```bash
+docker compose config
+docker compose port pilinova 8080
+```
+
+Alternativ ohne `.env` für diesen Aufruf:
+
+```bash
+BIND_ADDRESS=192.168.1.50 PORT=8080 docker compose up -d --build
+```
+
+Shell-Umgebungsvariablen haben Vorrang vor der `.env`. Ein bloßes `docker compose restart` übernimmt eine geänderte Portbindung nicht; dafür `docker compose up -d` verwenden. Ist die gewählte IP nicht am Host vorhanden oder der Port auf dieser Adresse bereits belegt, schlägt der Start fehl.
+
+Mit `BIND_ADDRESS=0.0.0.0` wird auf allen IPv4-Adressen des Hosts veröffentlicht. Im Container lauscht die Anwendung weiterhin auf `0.0.0.0:8080`; die Auswahl der Host-IP erfolgt über Dockers `ports.host_ip`. Bei einem HTTPS-Reverse-Proxy auf demselben Host kann die Voreinstellung `127.0.0.1` beibehalten werden.
 
 Für die öffentliche Bereitstellung einen HTTPS-Reverse-Proxy verwenden. Liegt dieser auf demselben Host, kann er auf `http://127.0.0.1:8080` weiterleiten. In einem gemeinsamen Docker-Netz lautet das Ziel `http://pilinova:8080`. Der Proxy muss den ursprünglichen `Host`-Header einschließlich eines etwaigen Ports weitergeben; die Anwendung prüft ihn gegen den Browser-Origin. Keine Pfadpräfixe verwenden. Die Anwendung benötigt keine ausgehenden Netzwerkverbindungen.
 
