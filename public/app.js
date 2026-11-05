@@ -55,7 +55,7 @@ async function loadMethodContent(container) {
     const result = await response.json();
     container.replaceChildren();
     if (container.dataset.method === 'self' || container.dataset.method === 'together') {
-      mountValueExercise(container, result.lists);
+      mountValueExercise(container, result.lists, {exactEight: container.dataset.method === 'self'});
       return;
     }
     if (!result.lists.length) { status.textContent = 'Hier werden bald Fragen und Werte für diese Methode bereitstehen.'; container.append(status); return; }
