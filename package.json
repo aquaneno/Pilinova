@@ -1,0 +1,9 @@
+{
+  "name": "pilinova",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "python3 server.py",
+    "test": "python3 -m unittest discover -s tests -v"
+  }
+}

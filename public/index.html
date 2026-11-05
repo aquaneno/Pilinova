@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Entdecke, was dir wichtig ist. Pilinova schafft Raum für deine Werte und die Verbindung zu anderen Menschen.">
+  <meta name="theme-color" content="#f7f6f0">
+  <title>Pilinova · Was uns verbindet</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="header"><a class="brand" href="/" aria-label="Pilinova Startseite"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 33C1 24 5 7 14 10c4 1 6 5 6 9 0-4 2-8 6-9 9-3 13 14-6 23Z"/></svg>pilinova<span class="brand-dot">.</span></a><span class="header-note">Ein Raum für echte Verbindung</span></header>
+  <main id="main">
+    <section class="intro" aria-labelledby="title">
+      <p class="eyebrow"><span></span> BEI DIR BEGINNT VERBINDUNG</p>
+      <h1 id="title">Was ist dir <em>wirklich</em><br>wichtig?</h1>
+      <p class="intro-copy">Lerne deine Werte kennen. Verstehe einen anderen Menschen besser.<br class="desktop-break"> Und entdecke, was euch verbindet.</p>
+    </section>
+    <section class="paths" aria-label="Dein Weg zur Verbindung">
+      <article class="card card-self">
+        <div class="card-top"><span class="number">01 / ICH</span><span class="small-label">Zeit für dich</span></div>
+        <div class="illustration" aria-hidden="true"><svg viewBox="0 0 280 150"><circle cx="140" cy="75" r="65" fill="#e2e8d8"/><ellipse cx="140" cy="75" rx="32" ry="52" fill="none" stroke="#637657" stroke-width="1.5" transform="rotate(-28 140 75)"/><ellipse cx="140" cy="75" rx="32" ry="52" fill="none" stroke="#637657" stroke-width="1.5" transform="rotate(28 140 75)"/><circle cx="140" cy="75" r="9" fill="#637657"/><path d="M214 33v12m-6-6h12" stroke="#637657" stroke-width="1.5"/></svg></div>
+        <h2>Verbindung zu mir</h2>
+        <p>Was macht dich aus? Nimm dir einen Moment für dich und die Werte, die dich bewegen.</p>
+        <button class="button button-green" data-open="self-dialog">Für mich starten <span aria-hidden="true">↗</span></button>
+        <span class="card-foot">Dein erster Schritt zu dir selbst</span>
+      </article>
+      <article class="card card-together">
+        <div class="card-top"><span class="number">02 / DU & ICH</span><span class="small-label">Raum für euch</span></div>
+        <div class="illustration" aria-hidden="true"><svg viewBox="0 0 280 150"><circle cx="113" cy="75" r="54" fill="#edd1bf"/><circle cx="168" cy="75" r="54" fill="#d99e80" fill-opacity=".45"/><circle cx="113" cy="75" r="42" fill="none" stroke="#a76443" stroke-width="1.5"/><circle cx="168" cy="75" r="42" fill="none" stroke="#a76443" stroke-width="1.5"/><path d="m135 75 5 5 10-11" fill="none" stroke="#a76443" stroke-width="1.8"/></svg></div>
+        <h2>Verbindung zu dir</h2>
+        <p>Zwei Perspektiven, eine Verbindung. Entdeckt eure Gemeinsamkeiten und Unterschiede.</p>
+        <form id="join-form" novalidate>
+          <label class="sr-only" for="session-id">Session-ID</label>
+          <div class="session-input"><input id="session-id" name="sessionId" placeholder="Session-ID eingeben" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40" required aria-describedby="join-message"><button class="join-button" type="submit" aria-label="Session beitreten">→</button></div>
+          <p id="join-message" class="inline-message" role="status"></p>
+        </form>
+        <button class="text-button" id="create-session">Neue Session erstellen <span aria-hidden="true">↗</span></button>
+      </article>
+      <article class="card card-mail">
+        <div class="card-top"><span class="number">03 / WIR</span><span class="small-label">In Verbindung bleiben</span></div>
+        <div class="illustration" aria-hidden="true"><svg viewBox="0 0 280 150"><circle cx="140" cy="75" r="65" fill="#e8e1ee"/><rect x="96" y="47" width="88" height="60" rx="5" fill="#f4eff6" stroke="#8b749b" stroke-width="1.5"/><path d="m98 51 42 32 42-32M98 103l27-26m57 26-27-26" fill="none" stroke="#8b749b" stroke-width="1.5"/><path d="M140 65c-14-8-10-18-4-15l4 4 4-4c6-3 10 7-4 15Z" fill="#8b749b"/><path d="M204 39v12m-6-6h12" stroke="#8b749b" stroke-width="1.5"/></svg></div>
+        <h2>E-Mail für uns</h2>
+        <p>Ein kleiner Impuls im Alltag. Schafft regelmäßig Raum für Gedanken, Gespräche und euch.</p>
+        <button class="button button-light" data-open="email-dialog">Unseren Rhythmus finden <span aria-hidden="true">↗</span></button>
+        <span class="card-foot">Zwei Postfächer. Ein gemeinsamer Moment.</span>
+      </article>
+    </section>
+    <p class="closing"><span aria-hidden="true">✳</span> Es gibt kein Richtig oder Falsch. Nur das, was dir wichtig ist.</p>
+  </main>
+  <footer><span>pilinova · Was uns verbindet</span><span>Mit Neugier. Mit Offenheit. Miteinander.</span></footer>
+
+  <dialog id="self-dialog" aria-labelledby="self-title">
+    <button class="close" type="button" aria-label="Schließen">×</button>
+    <p class="eyebrow">VERBINDUNG ZU MIR</p><h2 id="self-title">Deine Reise beginnt bald.</h2>
+    <p>Hier entsteht ein Raum, in dem du deine eigenen Werte entdecken kannst. Die Übung folgt in einem nächsten Schritt.</p>
+    <button class="button button-green" type="button" data-close>Zurück zur Übersicht <span aria-hidden="true">↗</span></button>
+  </dialog>
+  <dialog id="session-dialog" aria-labelledby="session-title">
+    <button class="close" type="button" aria-label="Schließen">×</button>
+    <p class="eyebrow">VERBINDUNG ZU DIR</p><h2 id="session-title">Ein Raum für euch zwei.</h2>
+    <p id="session-description">Teile diese Session-ID mit dem Menschen, mit dem du deine Werte entdecken möchtest. Sie ist 30 Tage gültig.</p>
+    <label class="field-label" for="created-session">Eure Session-ID</label>
+    <input class="created-id" id="created-session" readonly>
+    <button class="button button-green" id="copy-session" type="button">Session-ID kopieren <span aria-hidden="true">↗</span></button>
+    <p id="copy-message" class="inline-message" role="status"></p>
+    <p class="hint">Die gemeinsame Werte-Übung folgt. Eure Session ist bereits angelegt.</p>
+  </dialog>
+  <dialog id="email-dialog" aria-labelledby="email-title">
+    <button class="close" type="button" aria-label="Schließen">×</button>
+    <p class="eyebrow">E-MAIL FÜR UNS</p><h2 id="email-title">Zeit füreinander.</h2>
+    <p>Zwei E-Mail-Adressen und ein Rhythmus, der zu euch passt.</p>
+    <form id="email-form" novalidate>
+      <label class="field-label" for="email-one">Deine E-Mail-Adresse</label><input id="email-one" type="email" name="emailOne" placeholder="du@beispiel.de" autocomplete="email" maxlength="254" required>
+      <label class="field-label" for="email-two">Die zweite E-Mail-Adresse</label><input id="email-two" type="email" name="emailTwo" placeholder="ihr@beispiel.de" autocomplete="off" maxlength="254" required>
+      <fieldset><legend>Wie oft möchtet ihr einen Impuls?</legend><div class="intervals"><label><input type="radio" name="interval" value="daily"><span>Täglich</span></label><label><input type="radio" name="interval" value="weekly" checked><span>Wöchentlich</span></label><label><input type="radio" name="interval" value="monthly"><span>Monatlich</span></label></div></fieldset>
+      <p class="hint">Wir speichern eure Angaben für die geplante Funktion. Aktuell werden noch keine E-Mails verschickt. Trage die zweite Adresse bitte mit Einverständnis der Person ein.</p>
+      <p id="email-message" class="inline-message" role="status"></p>
+      <button class="button button-green" type="submit">Unseren Rhythmus speichern <span aria-hidden="true">↗</span></button>
+    </form>
+  </dialog>
+</body>
+</html>

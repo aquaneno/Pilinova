@@ -1,0 +1,10 @@
+.git
+.openai
+node_modules
+data
+tests
+__pycache__
+*.pyc
+.env
+README.md
+package.json
